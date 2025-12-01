@@ -21,9 +21,9 @@ spec:
           env:
             - name: SPRING_DATASOURCE_USERNAME
               valueFrom:
-              secretKeyRef:
-                name: cosy-postgresql-credentials
-                key: postgresql-username
+                secretKeyRef:
+                  name: cosy-postgresql-credentials
+                  key: postgresql-username
             - name: SPRING_DATASOURCE_PASSWORD
               valueFrom:
                 secretKeyRef:
