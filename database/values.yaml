@@ -1,10 +1,11 @@
 global:
   storageClass: "local-path"
 auth:
-  existingSecret: cosy-postgresql-credentials
-  existingSecretUsernameKey: postgresql-username
-  existingSecretPasswordKey: postgresql-password
+  existingSecret: "cosy-postgresql-credentials"
+  username: cosyuser
   database: cosy
+  secretKeys:
+    userPasswordKey: "postgresql-password"
 primary:
   persistence:
     enabled: true
