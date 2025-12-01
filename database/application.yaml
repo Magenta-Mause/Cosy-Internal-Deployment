@@ -13,6 +13,9 @@ spec:
       values: |
         global:
           storageClass: "local-path"
+
+        image:
+          tag: "16.4.0-debian-12"
         
         # 1. Configure the image to use the existing secret for the password
         auth:
