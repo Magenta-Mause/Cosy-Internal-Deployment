@@ -1,5 +1,5 @@
 global:
-  storageClass: "standard"
+  storageClass: "local-path"
 auth:
   existingSecret: cosy-postgresql-credentials
   existingSecretUsernameKey: postgresql-username
