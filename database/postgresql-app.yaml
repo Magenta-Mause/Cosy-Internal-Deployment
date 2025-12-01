@@ -2,7 +2,6 @@ apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
   name: cosy-postgresql
-  namespace: cosy
 spec:
   project: cosy
   source:
@@ -11,8 +10,18 @@ spec:
     targetRevision: 12.17.0
     helm:
       releaseName: cosy-postgresql
-      valuesFiles:
-        - postgresql-values.yaml
+      values: |
+        global:
+          storageClass: "standard"  # optional: adjust to your cluster
+        auth:
+          existingSecret: cosy-postgresql-credentials
+          existingSecretUsernameKey: postgresql-username
+          existingSecretPasswordKey: postgresql-password
+          database: cosy
+        primary:
+          persistence:
+            enabled: true
+            size: 5Gi
   destination:
     server: https://kubernetes.default.svc
     namespace: cosy
