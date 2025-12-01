@@ -13,7 +13,7 @@ spec:
     helm:
       values: |
         global:
-          storageClass: standard
+          storageClass: local-path
 
         auth:
           existingSecret: cosy-postgresql-credentials
