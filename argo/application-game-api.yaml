@@ -9,7 +9,7 @@ spec:
   source:
     path: argo
     repoURL: https://github.com/Magenta-Mause/cosy-gameapi
-    targetRevision: feature/COSY-48-docker-deployment
+    targetRevision: HEAD
   sources: []
   project: cosy
   syncPolicy:
