@@ -69,3 +69,4 @@ spec:
       - name: postgres-storage
         persistentVolumeClaim:
           claimName: cosy-postgres-pvc
+

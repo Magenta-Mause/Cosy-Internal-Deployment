@@ -1,7 +1,7 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: cosy-backend
+  name: cosy-frontend
   namespace: cosy
   annotations:
     traefik.ingress.kubernetes.io/router.entrypoints: websecure
@@ -10,14 +10,15 @@ spec:
     - host: cosy.jannekeipert.de
       http:
         paths:
-          - path: /api
+          - path: /
             pathType: Prefix
             backend:
               service:
-                name: cosy-backend
+                name: cosy-frontend
                 port:
                   number: 80
   tls:
     - hosts:
         - cosy.jannekeipert.de
-      secretName: multi-domain-cert   
+      secretName: multi-domain-cert
+
