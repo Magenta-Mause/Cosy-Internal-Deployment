@@ -1,0 +1,290 @@
+---
+# VPS Initial Setup Playbook
+# Creates deploy user, hardens SSH, installs Docker, sets up nginx with SSL
+# Run once: ansible-playbook -i inventory-setup.yml setup-vps.yml --ask-pass --ask-become-pass
+
+- name: Initial VPS Setup
+  hosts: vps
+  become: yes
+  
+  vars:
+    deploy_user: deploy
+    deploy_user_password: "{{ lookup('env', 'DEPLOY_USER_PASSWORD') | default('change_me_after_first_login') }}"
+    # Public SSH key for the deploy user (add yours here or pass via env)
+    deploy_user_ssh_key: "{{ lookup('env', 'DEPLOY_USER_SSH_KEY') }}"
+    
+    # Domain configuration
+    domain_name: "{{ lookup('env', 'COSY_DOMAIN') | default('cosy.example.com') }}"
+    letsencrypt_email: "{{ lookup('env', 'LETSENCRYPT_EMAIL') | default('admin@example.com') }}"
+    
+  tasks:
+    - name: Update apt cache
+      apt:
+        update_cache: yes
+        cache_valid_time: 3600
+    
+    - name: Upgrade all packages
+      apt:
+        upgrade: dist
+        autoremove: yes
+        autoclean: yes
+    
+    - name: Install required packages
+      apt:
+        name:
+          - ufw
+          - fail2ban
+          - unattended-upgrades
+          - apt-transport-https
+          - ca-certificates
+          - curl
+          - gnupg
+          - lsb-release
+          - python3-pip
+          - nginx
+          - certbot
+          - python3-certbot-nginx
+        state: present
+    
+    # User Setup
+    - name: Create deploy user
+      user:
+        name: "{{ deploy_user }}"
+        password: "{{ deploy_user_password | password_hash('sha512') }}"
+        shell: /bin/bash
+        create_home: yes
+        groups: sudo,docker
+        append: yes
+      
+    - name: Create .ssh directory for deploy user
+      file:
+        path: /home/{{ deploy_user }}/.ssh
+        state: directory
+        owner: "{{ deploy_user }}"
+        group: "{{ deploy_user }}"
+        mode: '0700'
+    
+    - name: Add SSH public key for deploy user
+      authorized_key:
+        user: "{{ deploy_user }}"
+        key: "{{ deploy_user_ssh_key }}"
+        state: present
+      when: deploy_user_ssh_key != ""
+    
+    - name: Allow deploy user to sudo without password
+      lineinfile:
+        path: /etc/sudoers.d/{{ deploy_user }}
+        line: "{{ deploy_user }} ALL=(ALL) NOPASSWD:ALL"
+        create: yes
+        mode: '0440'
+        validate: 'visudo -cf %s'
+    
+    # Docker Installation
+    - name: Add Docker GPG key
+      apt_key:
+        url: https://download.docker.com/linux/ubuntu/gpg
+        state: present
+    
+    - name: Add Docker repository
+      apt_repository:
+        repo: "deb [arch=amd64] https://download.docker.com/linux/ubuntu {{ ansible_distribution_release }} stable"
+        state: present
+    
+    - name: Install Docker
+      apt:
+        name:
+          - docker-ce
+          - docker-ce-cli
+          - containerd.io
+          - docker-compose-plugin
+        state: present
+        update_cache: yes
+    
+    - name: Start and enable Docker
+      systemd:
+        name: docker
+        state: started
+        enabled: yes
+    
+    - name: Install Docker Compose standalone
+      get_url:
+        url: https://github.com/docker/compose/releases/download/v2.24.0/docker-compose-linux-x86_64
+        dest: /usr/local/bin/docker-compose
+        mode: '0755'
+    
+    # Firewall Configuration
+    - name: Configure UFW defaults
+      ufw:
+        direction: "{{ item.direction }}"
+        policy: "{{ item.policy }}"
+      loop:
+        - { direction: 'incoming', policy: 'deny' }
+        - { direction: 'outgoing', policy: 'allow' }
+    
+    - name: Allow SSH
+      ufw:
+        rule: allow
+        port: '22'
+        proto: tcp
+    
+    - name: Allow HTTP
+      ufw:
+        rule: allow
+        port: '80'
+        proto: tcp
+    
+    - name: Allow HTTPS
+      ufw:
+        rule: allow
+        port: '443'
+        proto: tcp
+    
+    - name: Enable UFW
+      ufw:
+        state: enabled
+    
+    # SSH Hardening
+    - name: Disable root login via SSH
+      lineinfile:
+        path: /etc/ssh/sshd_config
+        regexp: '^PermitRootLogin'
+        line: 'PermitRootLogin no'
+        state: present
+      notify: restart ssh
+    
+    - name: Disable password authentication
+      lineinfile:
+        path: /etc/ssh/sshd_config
+        regexp: '^PasswordAuthentication'
+        line: 'PasswordAuthentication no'
+        state: present
+      notify: restart ssh
+    
+    - name: Enable public key authentication
+      lineinfile:
+        path: /etc/ssh/sshd_config
+        regexp: '^PubkeyAuthentication'
+        line: 'PubkeyAuthentication yes'
+        state: present
+      notify: restart ssh
+    
+    # Fail2Ban Configuration
+    - name: Configure fail2ban for SSH
+      copy:
+        dest: /etc/fail2ban/jail.local
+        content: |
+          [DEFAULT]
+          bantime = 3600
+          findtime = 600
+          maxretry = 5
+          
+          [sshd]
+          enabled = true
+          port = 22
+          logpath = /var/log/auth.log
+        mode: '0644'
+      notify: restart fail2ban
+    
+    # Create deployment directory
+    - name: Create deployment directory
+      file:
+        path: /opt/cosy
+        state: directory
+        owner: "{{ deploy_user }}"
+        group: "{{ deploy_user }}"
+        mode: '0755'
+    
+    # Nginx Configuration
+    - name: Remove default nginx site
+      file:
+        path: /etc/nginx/sites-enabled/default
+        state: absent
+    
+    - name: Create nginx config for Cosy
+      template:
+        src: nginx-cosy.conf.j2
+        dest: /etc/nginx/sites-available/cosy
+        mode: '0644'
+      notify: restart nginx
+    
+    - name: Enable Cosy nginx site
+      file:
+        src: /etc/nginx/sites-available/cosy
+        dest: /etc/nginx/sites-enabled/cosy
+        state: link
+      notify: restart nginx
+    
+    - name: Test nginx configuration
+      command: nginx -t
+      changed_when: false
+    
+    # SSL Certificate
+    - name: Check if SSL certificate exists
+      stat:
+        path: /etc/letsencrypt/live/{{ domain_name }}/fullchain.pem
+      register: ssl_cert
+    
+    - name: Obtain SSL certificate
+      command: >
+        certbot --nginx -d {{ domain_name }}
+        --non-interactive --agree-tos
+        --email {{ letsencrypt_email }}
+        --redirect
+      when: not ssl_cert.stat.exists
+      notify: restart nginx
+    
+    - name: Setup SSL certificate auto-renewal
+      cron:
+        name: "Renew SSL certificates"
+        minute: "0"
+        hour: "3"
+        job: "certbot renew --quiet --post-hook 'systemctl reload nginx'"
+    
+    # Automatic Security Updates
+    - name: Configure unattended upgrades
+      copy:
+        dest: /etc/apt/apt.conf.d/50unattended-upgrades
+        content: |
+          Unattended-Upgrade::Allowed-Origins {
+              "${distro_id}:${distro_codename}-security";
+          };
+          Unattended-Upgrade::AutoFixInterruptedDpkg "true";
+          Unattended-Upgrade::MinimalSteps "true";
+          Unattended-Upgrade::Remove-Unused-Dependencies "true";
+          Unattended-Upgrade::Automatic-Reboot "false";
+        mode: '0644'
+    
+    - name: Enable automatic security updates
+      copy:
+        dest: /etc/apt/apt.conf.d/20auto-upgrades
+        content: |
+          APT::Periodic::Update-Package-Lists "1";
+          APT::Periodic::Unattended-Upgrade "1";
+          APT::Periodic::AutocleanInterval "7";
+        mode: '0644'
+    
+    # System limits for Docker
+    - name: Set system limits for containers
+      lineinfile:
+        path: /etc/security/limits.conf
+        line: "{{ item }}"
+        create: yes
+      loop:
+        - "* soft nofile 65536"
+        - "* hard nofile 65536"
+    
+  handlers:
+    - name: restart ssh
+      systemd:
+        name: sshd
+        state: restarted
+    
+    - name: restart fail2ban
+      systemd:
+        name: fail2ban
+        state: restarted
+    
+    - name: restart nginx
+      systemd:
+        name: nginx
+        state: restarted

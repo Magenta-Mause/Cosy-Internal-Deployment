@@ -1,0 +1,13 @@
+all:
+  hosts:
+    vps:
+      # Use your VPS IP address
+      ansible_host: YOUR_VPS_IP_HERE
+      
+      # For first run, use root user (or your initial user)
+      ansible_user: root
+      
+      # For first run with password authentication
+      # You'll be prompted for password with --ask-pass
+      ansible_ssh_common_args: '-o StrictHostKeyChecking=no'
+      ansible_python_interpreter: /usr/bin/python3

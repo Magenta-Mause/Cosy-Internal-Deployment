@@ -1,0 +1,57 @@
+---
+- name: Deploy COSY to VPS using Docker Compose
+  hosts: vps
+  become: false
+  tasks:
+    
+    - name: Check if deployment directory exists
+      stat:
+        path: "{{ deployment_path }}"
+      register: deploy_dir
+      
+    - name: Fail if deployment directory doesn't exist
+      fail:
+        msg: "Deployment directory {{ deployment_path }} does not exist. Please create it first."
+      when: not deploy_dir.stat.exists
+    
+    - name: Pull latest changes from deployment repo
+      git:
+        repo: https://github.com/Magenta-Mause/cosy-deployment.git
+        dest: "{{ deployment_path }}"
+        version: main
+        force: yes
+      
+    - name: Log in to GitHub Container Registry
+      community.docker.docker_login:
+        registry: ghcr.io
+        username: "{{ lookup('env', 'GHCR_USERNAME') }}"
+        password: "{{ lookup('env', 'GHCR_TOKEN') }}"
+      when: lookup('env', 'GHCR_USERNAME') != '' and lookup('env', 'GHCR_TOKEN') != ''
+      
+    - name: Pull latest Docker images
+      community.docker.docker_compose_v2:
+        project_src: "{{ docker_compose_path }}"
+        state: present
+        pull: always
+      
+    - name: Start services with docker-compose
+      community.docker.docker_compose_v2:
+        project_src: "{{ docker_compose_path }}"
+        state: present
+      
+    - name: Remove unused Docker images
+      community.docker.docker_prune:
+        images: yes
+        images_filters:
+          dangling: true
+      ignore_errors: yes
+      
+    - name: Show running containers
+      command: docker ps
+      register: docker_ps
+      changed_when: false
+      
+    - name: Display running containers
+      debug:
+        var: docker_ps.stdout_lines
+
