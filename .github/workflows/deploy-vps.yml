@@ -16,34 +16,39 @@ jobs:
       - name: Checkout deployment repo
         uses: actions/checkout@v4
         
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.11'
+      - name: Setup SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.VPS_SSH_KEY }}" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          ssh-keyscan -H ${{ secrets.VPS_HOST }} >> ~/.ssh/known_hosts
           
-      - name: Install Ansible
+      - name: Copy Docker Compose files to VPS
         run: |
-          pip install ansible
-          ansible-galaxy collection install community.docker
+          scp -i ~/.ssh/deploy_key -r docker/* ${{ secrets.DEPLOY_USER }}@${{ secrets.VPS_HOST }}:/opt/cosy/
           
-      - name: Create SSH directory
-        run: mkdir -p ~/.ssh
-        
-      - name: Add SSH key
+      - name: Deploy on VPS
         run: |
-          echo "${{ secrets.VPS_SSH_KEY }}" > ~/.ssh/github_deploy
-          chmod 600 ~/.ssh/github_deploy
-      - name: Update inventory with VPS IP
-        run: |
-          sed -i "s/YOUR_VPS_IP_HERE/${{ secrets.VPS_HOST }}/" ansible/inventory.yml
-          
-      - name: Run Ansible deployment
-        env:
-          GHCR_USERNAME: ${{ github.actor }}
-          GHCR_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          cd ansible
-          ansible-playbook deploy-docker.yml -v
+          ssh -i ~/.ssh/deploy_key ${{ secrets.DEPLOY_USER }}@${{ secrets.VPS_HOST }} << 'EOF'
+            set -e
+            cd /opt/cosy
+            
+            # Log in to GitHub Container Registry
+            echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+            
+            # Pull latest images
+            docker compose pull
+            
+            # Restart services
+            docker compose up -d
+            
+            # Clean up old images
+            docker image prune -f
+            
+            # Show status
+            echo "=== Running containers ==="
+            docker compose ps
+          EOF
           
       - name: Deployment summary
         run: echo "✅ Deployment to VPS completed successfully!"

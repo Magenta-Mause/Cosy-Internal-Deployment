@@ -1,6 +1,6 @@
 # Cosy Internal Deployment Repository
 
-This repository contains the deployment configurations for the internal Cosy test environments. It includes configurations for both run-modes:  Kubernetes and Docker Compose.
+This repository contains the deployment configurations for the internal Cosy test environments. It includes configurations for both run-modes: Kubernetes and Docker Compose.
 
 ## CI/CD Deployment Flow
 
@@ -8,11 +8,45 @@ This repository contains the deployment configurations for the internal Cosy tes
 
 ## Project Structure
 
-*   **`kubernetes/`**: Contains all Kubernetes deployment configurations for the Cosy application, including deployments, services, ingresses, and database setup.
-*   **`docker/`**: Contains Docker Compose configurations and related files for running the Cosy application using Docker.
-*   **`assets/`**: Contains deployment flow visualizations and diagrams (see `cosy_cicd.drawio` for CI/CD pipeline visualization).
+*   **`kubernetes/`**: Kubernetes manifests (deployments, services, ingresses, database)
+*   **`docker/`**: Docker Compose configuration for VPS deployment
+    *   `docker-compose.yml` - Service definitions
+    *   `SETUP-VPS.md` - Complete VPS setup guide
+    *   `ansible/` - One-time VPS setup automation
+*   **`.github/workflows/`**: GitHub Actions workflows
+*   **`assets/`**: CI/CD flow diagrams
 
-## Getting Started
+## Deployment Methods
 
-Refer to the `kubernetes/` and `docker/` directories for specific instructions on deploying the application using each respective method.
+### Kubernetes (ArgoCD)
+
+**Deployed via ArgoCD** - No GitHub Actions needed. ArgoCD automatically pulls and deploys changes.
+
+- **ArgoCD Dashboard**: https://argo.jannekeipert.de/
+- ArgoCD monitors this repository and automatically syncs changes
+- Updates to `kubernetes/` manifests trigger automatic deployments
+
+### Docker Compose on VPS (GitHub Actions)
+
+**Initial Setup** (One-time): Use Ansible to configure VPS - see [docker/SETUP-VPS.md](docker/SETUP-VPS.md)
+
+**Deployment** (Automated): GitHub Actions handles deployments via SSH
+
+- Push to `main` → Automatic deployment
+- Manual trigger via GitHub Actions UI
+- Workflow: SSH → copy files → pull images → restart services
+
+**Note**: Ansible is only for initial VPS setup. All deployments are 100% GitHub Actions.
+
+## Quick Start
+
+### For Kubernetes
+1. Update manifests in `kubernetes/`
+2. Push to `main`
+3. Monitor at https://argo.jannekeipert.de/
+
+### For Docker/VPS
+1. **First time**: Follow [docker/SETUP-VPS.md](docker/SETUP-VPS.md)
+2. **Deploy**: Push to `main` or trigger workflow manually
+3. **Monitor**: GitHub Actions tab
 
