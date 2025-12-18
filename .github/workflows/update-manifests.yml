@@ -8,10 +8,17 @@ jobs:
   update-manifests:
     runs-on: ubuntu-latest
     steps:
+      - name: Generate GitHub App Token
+        id: app-token
+        uses: actions/create-github-app-token@v1
+        with:
+          app-id: ${{ secrets.DEPLOYMENT_APP_ID }}
+          private-key: ${{ secrets.DEPLOYMENT_APP_PRIVATE_KEY }}
+
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ steps.app-token.outputs.token }}
 
       - name: Update Kubernetes deployment
         run: |
@@ -54,3 +61,4 @@ jobs:
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "- ✅ Kubernetes manifest updated (ArgoCD will auto-sync)" >> $GITHUB_STEP_SUMMARY
           echo "- ✅ Docker Compose updated (VPS deployment will trigger)" >> $GITHUB_STEP_SUMMARY
+
