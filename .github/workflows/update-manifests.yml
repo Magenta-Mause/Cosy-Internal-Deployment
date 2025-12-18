@@ -1,25 +1,32 @@
 name: Update Deployment Manifests
 
-on:
+on: 
   repository_dispatch:
     types: [update_image]
 
 jobs:
-  update-manifests:
+  update-manifests: 
     runs-on: ubuntu-latest
     steps:
+      - name: Generate GitHub App Token
+        id: app-token
+        uses: actions/create-github-app-token@v1
+        with:
+          app-id: ${{ secrets. DEPLOYMENT_APP_ID }}
+          private-key: ${{ secrets.DEPLOYMENT_APP_PRIVATE_KEY }}
+
       - name: Checkout repository
         uses: actions/checkout@v4
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
+        with: 
+          token: ${{ steps.app-token.outputs.token }}
 
       - name: Update Kubernetes deployment
         run: |
-          SERVICE=${{ github.event.client_payload.service }}
-          COMMIT_SHA=${{ github.event.client_payload.commit_sha }}
+          SERVICE=${{ github.event. client_payload.service }}
+          COMMIT_SHA=${{ github. event.client_payload.commit_sha }}
           
           echo "Updating Kubernetes deployment for ${SERVICE} to ${COMMIT_SHA}"
-          sed -i "s|ghcr.io/magenta-mause/cosy-${SERVICE}:.*|ghcr.io/magenta-mause/cosy-${SERVICE}:${COMMIT_SHA}|" \
+          sed -i "s|ghcr.io/magenta-mause/cosy-${SERVICE}:.*|ghcr.io/magenta-mause/cosy-${SERVICE}: ${COMMIT_SHA}|" \
             kubernetes/${SERVICE}/deployment.yaml
 
       - name: Update Docker Compose
@@ -33,14 +40,14 @@ jobs:
 
       - name: Commit and push changes
         run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git config user. name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github. com"
           git add kubernetes/${{ github.event.client_payload.service }}/deployment.yaml docker/docker-compose.yml
           
           if git diff --staged --quiet; then
             echo "No changes to commit"
           else
-            git commit -m "Update ${{ github.event.client_payload.service }} to ${{ github.event.client_payload.commit_sha }}"
+            git commit -m "Update ${{ github.event.client_payload.service }} to ${{ github. event.client_payload.commit_sha }}"
             git push
             echo "✅ Manifests updated successfully!"
           fi
@@ -54,3 +61,4 @@ jobs:
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "- ✅ Kubernetes manifest updated (ArgoCD will auto-sync)" >> $GITHUB_STEP_SUMMARY
           echo "- ✅ Docker Compose updated (VPS deployment will trigger)" >> $GITHUB_STEP_SUMMARY
+
