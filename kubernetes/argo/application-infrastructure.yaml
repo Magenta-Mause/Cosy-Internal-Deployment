@@ -10,7 +10,6 @@ spec:
     path: infrastructure
     repoURL: https://github.com/Magenta-Mause/cosy-deployment
     targetRevision: HEAD
-  sources: []
   project: cosy
   syncPolicy:
     automated:
