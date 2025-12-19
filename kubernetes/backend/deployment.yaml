@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: cosy-backend
-          image: ghcr.io/magenta-mause/cosy-backend:v0.0.4
+          image: ghcr.io/magenta-mause/cosy-backend:5f308fd4bb44beca12246686c910f28c9bc832c9
           ports:
             - containerPort: 8080
           env:
