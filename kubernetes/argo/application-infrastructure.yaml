@@ -7,7 +7,7 @@ spec:
     namespace: cosy
     server: https://kubernetes.default.svc
   source:
-    path: infrastructure
+    path: kubernetes/infrastructure
     repoURL: https://github.com/Magenta-Mause/cosy-deployment
     targetRevision: HEAD
   project: cosy
