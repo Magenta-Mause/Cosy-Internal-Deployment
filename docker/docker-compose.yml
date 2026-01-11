@@ -3,10 +3,13 @@ services:
     image: ghcr.io/magenta-mause/cosy-backend:sha-ec29d2e
     ports:
       - "127.0.0.1:8080:8080"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
     environment:
       - SPRING_DATASOURCE_USERNAME=${POSTGRES_USER}
       - SPRING_DATASOURCE_PASSWORD=${POSTGRES_PASSWORD}
       - SPRING_DATASOURCE_URL=jdbc:postgresql://database:5432/cosydb
+      - COSY_ENGINE_DOCKER_SOCKET_PATH=unix:///var/run/docker.sock
     depends_on:
       - database
     networks:
