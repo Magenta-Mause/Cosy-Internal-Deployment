@@ -1,7 +1,7 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: cosy-infrastructure
+  name: cosy-infrastructure-loki
 spec:
   destination:
     namespace: cosy
