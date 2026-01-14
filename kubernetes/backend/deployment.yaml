@@ -31,6 +31,16 @@ spec:
                   key: postgresql-password
             - name: SPRING_DATASOURCE_URL
               value: jdbc:postgresql://cosy-postgres:5432/cosydb
+            - name: COSY_LOKI_USER
+              valueFrom:
+                secretKeyRef:
+                  name: cosy-loki-credentials
+                  key: user
+            - name: COSY_LOKI_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: cosy-loki-credentials
+                  key: password
           resources:
             limits:
               memory: "512Mi"
