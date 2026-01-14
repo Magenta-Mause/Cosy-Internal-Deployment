@@ -1,13 +1,13 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: cosy-backend
+  name: cosy-infrastructure-loki-auth-nginx
 spec:
   destination:
     namespace: cosy
     server: https://kubernetes.default.svc
   source:
-    path: kubernetes/backend
+    path: kubernetes/infrastructure/loki/nginx-auth-proxy
     repoURL: https://github.com/Magenta-Mause/cosy-deployment
     targetRevision: feature/cosy-000-add-loki-infra
   project: cosy

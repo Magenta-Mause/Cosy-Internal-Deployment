@@ -1,17 +1,17 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: loki-nginx
-  namespace: observability
+  name: cosy-loki-nginx
+  namespace: cosy
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: loki-nginx
+      app: cosy-loki-nginx
   template:
     metadata:
       labels:
-        app: loki-nginx
+        app: cosy-loki-nginx
     spec:
       containers:
         - name: nginx
@@ -28,7 +28,7 @@ spec:
       volumes:
         - name: nginx-config
           configMap:
-            name: loki-nginx-config
+            name: cosy-loki-nginx-config
         - name: htpasswd
           secret:
             secretName: loki-htpasswd

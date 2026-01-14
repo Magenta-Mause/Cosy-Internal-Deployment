@@ -1,17 +1,17 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: loki
+  name: cosy-loki
   namespace: cosy
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: loki
+      app: cosy-loki
   template:
     metadata:
       labels:
-        app: loki
+        app: cosy-loki
     spec:
       containers:
         - name: loki
@@ -28,8 +28,8 @@ spec:
       volumes:
         - name: config
           configMap:
-            name: loki-config
+            name: cosy-loki-config
         - name: data
           persistentVolumeClaim:
-            claimName: loki-data
+            claimName: cosy-loki-data
 
