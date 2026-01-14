@@ -41,8 +41,12 @@ spec:
                 secretKeyRef:
                   name: cosy-loki-credentials
                   key: password
-            - name: SPRING_COSY_LOKI_URL
+            - name: COSY_LOKI_URL
               value: http://cosy-loki-nginx:80
+
+          volumeMounts:
+            - name: docker-socket
+              mountPath: /var/run/docker.sock
 
           resources:
             limits:
@@ -51,6 +55,7 @@ spec:
             requests:
               memory: "256Mi"
               cpu: "250m"
+
           livenessProbe:
             httpGet:
               path: /api/actuator/health
@@ -64,3 +69,8 @@ spec:
             initialDelaySeconds: 15
             periodSeconds: 5
 
+      volumes:
+        - name: docker-socket
+          hostPath:
+            path: /var/run/docker.sock
+            type: Socket

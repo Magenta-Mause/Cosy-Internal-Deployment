@@ -5,6 +5,7 @@ This repository contains the deployment configurations for the internal Cosy tes
 ## Required K8s Secrets
 
 ### `loki-htpasswd`
+#### htpasswd:
 Example value:
 ```
 loki-user:$2y$05$ObHZbS1jNdyltXN1zpJLOOaSFcIkb2yQ1qoM4k1XR2qjVzJSgdsf2
@@ -16,6 +17,10 @@ This secret can be generated using this commmand:
 docker run --rm httpd:2.4-alpine htpasswd -nbB loki-user loki-password
 ```
 
+### cosy-loki-credentials
+Auth credentials defined in the htpasswd Config
+#### password: `password used by loki auth proxy`
+#### user: `user used by loki auth proxy`
 
 ## CI/CD Deployment Flow
 
