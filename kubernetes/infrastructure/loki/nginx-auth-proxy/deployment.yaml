@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: loki-nginx
+  namespace: observability
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: loki-nginx
+  template:
+    metadata:
+      labels:
+        app: loki-nginx
+    spec:
+      containers:
+        - name: nginx
+          image: nginx:1.25
+          ports:
+            - containerPort: 80
+          volumeMounts:
+            - name: nginx-config
+              mountPath: /etc/nginx/nginx.conf
+              subPath: nginx.conf
+            - name: htpasswd
+              mountPath: /etc/nginx/htpasswd
+              subPath: htpasswd
+      volumes:
+        - name: nginx-config
+          configMap:
+            name: loki-nginx-config
+        - name: htpasswd
+          secret:
+            secretName: loki-htpasswd
+
