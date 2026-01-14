@@ -9,7 +9,7 @@ spec:
   source:
     path: kubernetes/infrastructure/loki
     repoURL: https://github.com/Magenta-Mause/cosy-deployment
-    targetRevision: feature/cosy-000-add-loki-infra
+    targetRevision: HEAD
   project: cosy
   syncPolicy:
     automated:
