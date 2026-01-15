@@ -8,7 +8,7 @@ spec:
     server: https://kubernetes.default.svc
   source:
     path: kubernetes/infrastructure/loki
-    repoURL: https://github.com/Magenta-Mause/cosy-interal-deployment
+    repoURL: https://github.com/Magenta-Mause/cosy-internal-deployment
     targetRevision: HEAD
   project: cosy
   syncPolicy:
