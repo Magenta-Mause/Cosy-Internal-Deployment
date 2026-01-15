@@ -1,13 +1,13 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: cosy-infrastructure
+  name: cosy-infrastructure-postgres
 spec:
   destination:
     namespace: cosy
     server: https://kubernetes.default.svc
   source:
-    path: kubernetes/infrastructure
+    path: kubernetes/infrastructure/postgres
     repoURL: https://github.com/Magenta-Mause/cosy-deployment
     targetRevision: HEAD
   project: cosy
