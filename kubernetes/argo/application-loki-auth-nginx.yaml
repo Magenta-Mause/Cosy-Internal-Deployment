@@ -8,7 +8,7 @@ spec:
     server: https://kubernetes.default.svc
   source:
     path: kubernetes/infrastructure/loki/nginx-auth-proxy
-    repoURL: https://github.com/Magenta-Mause/cosy-deployment
+    repoURL: https://github.com/Magenta-Mause/cosy-interal-deployment
     targetRevision: HEAD
   project: cosy
   syncPolicy:
