@@ -1,6 +1,7 @@
 services:
   backend:
     image: ghcr.io/magenta-mause/cosy-backend:sha-60536f4
+    container_name: cosy-backend
     ports:
       - "127.0.0.1:8080:8080"
     volumes:
@@ -12,8 +13,13 @@ services:
       - SPRING_DATASOURCE_PASSWORD=${POSTGRES_PASSWORD}
       - SPRING_DATASOURCE_URL=jdbc:postgresql://database:5432/cosydb
       - COSY_ENGINE_DOCKER_SOCKET_PATH=unix:///var/run/docker.sock
+      - COSY_LOKI_URL=http://loki-nginx-proxy:80
+      - COSY_LOKI_USER=${LOKI_USER}
+      - COSY_LOKI_PASSWORD=${LOKI_PASSWORD}
     depends_on:
       - database
+      - loki
+      - loki-nginx-proxy
     networks:
       - cosy-network
 
@@ -37,9 +43,31 @@ services:
     networks:
       - cosy-network
 
+  loki:
+    image: grafana/loki:2.9.4
+    container_name: cosy-loki
+    command: -config.file=/etc/loki/loki-config.yaml
+    volumes:
+      - loki-data:/loki
+      - ./loki-config.yaml:/etc/loki/loki-config.yaml:ro
+    networks:
+      - cosy-network
+
+  loki-nginx-proxy:
+    image: nginx:1.25
+    container_name: cosy-loki-nginx
+    volumes:
+      - ./loki-nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./htpasswd:/etc/nginx/htpasswd:ro
+    networks:
+      - cosy-network
+    depends_on:
+      - loki
+
+
 volumes:
   postgres-data:
+  loki-data:
 
 networks:
   cosy-network:
-
