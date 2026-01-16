@@ -2,7 +2,6 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: cosy-frontend
-  namespace: cosy
 spec:
   replicas: 1
   selector:
@@ -15,7 +14,7 @@ spec:
     spec:
       containers:
         - name: cosy-frontend
-          image: ghcr.io/magenta-mause/cosy-frontend:387669dad567df6fd00d8575f7f3073e6ef55f36
+          image: ghcr.io/magenta-mause/cosy-frontend:sha-98d9743
           ports:
             - containerPort: 80
           resources:

@@ -2,7 +2,6 @@ apiVersion: v1
 kind: Service
 metadata:
   name: cosy-postgres
-  namespace: cosy
 spec:
   ports:
   - port: 5432
@@ -14,7 +13,6 @@ apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: cosy-postgres-pvc
-  namespace: cosy
 spec:
   accessModes:
     - ReadWriteOnce
@@ -27,7 +25,6 @@ apiVersion: apps/v1
 kind: StatefulSet
 metadata:
   name: cosy-postgres
-  namespace: cosy
 spec:
   serviceName: "cosy-postgres"
   replicas: 1
@@ -44,8 +41,6 @@ spec:
         image: postgres:16
         ports:
         - containerPort: 5432
-        
-        # Map the Official Image Env Vars to your Secret Keys
         env:
         - name: POSTGRES_DB
           value: "cosydb"
