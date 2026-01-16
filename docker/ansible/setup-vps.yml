@@ -19,6 +19,8 @@
     # IMPORTANT: After the first run, save these to your GitHub Secrets.
     postgres_user: cosy_user
     postgres_password: "{{ lookup('password', '/dev/null length=32 chars=ascii_letters,digits') }}"
+    loki_user: loki_user
+    loki_password: "{{ lookup('password', '/dev/null length=32 chars=ascii_letters,digits') }}"
     
   pre_tasks:
     - name: Check for COSY_DOMAIN environment variable
@@ -317,14 +319,34 @@
         - "* soft nofile 65536"
         - "* hard nofile 65536"
 
-    # Docker Compose Setup
-    - name: Copy docker-compose file to deployment directory
+    - name: Generate htpasswd file for Loki
+      command: >
+        docker run --rm httpd:2.4-alpine
+        htpasswd -nbB {{ loki_user }} {{ loki_password }}
+      register: htpasswd_output
+      changed_when: true
+      no_log: true
+
+    - name: Write htpasswd file
       copy:
-        src: ../docker-compose.yml
-        dest: /opt/cosy/docker-compose.yml
+        content: "{{ htpasswd_output.stdout }}"
+        dest: /opt/cosy/htpasswd
+        owner: "101"
+        group: "101"
+        mode: "0640"
+      no_log: true
+
+    - name: Copy config files to host
+      copy:
+        src: "../{{ item }}"
+        dest: "/opt/cosy/{{ item }}"
         owner: "{{ deploy_user }}"
         group: "{{ deploy_user }}"
         mode: '0644'
+      loop:
+        - docker-compose.yml
+        - loki-config.yaml
+        - loki-nginx.conf
 
     - name: Create .env file with secrets
       template:
@@ -375,4 +397,3 @@
       systemd:
         name: nginx
         state: restarted
-
