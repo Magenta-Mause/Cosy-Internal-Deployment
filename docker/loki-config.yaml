@@ -31,4 +31,4 @@ storage_config:
     shared_store: filesystem
 
 limits_config:
-  retention_period: 168h   # 7 days (optional)
+  retention_period: 168h   # 7 days; omit to disable retention (requires compactor configuration to take effect)

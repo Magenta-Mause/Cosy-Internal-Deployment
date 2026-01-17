@@ -19,6 +19,7 @@ services:
     depends_on:
       - database
       - loki
+      - loki-nginx-proxy
     networks:
       - cosy-network
 
