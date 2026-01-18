@@ -45,7 +45,13 @@ spec:
                   key: password
             - name: COSY_LOKI_URL
               value: http://cosy-loki-nginx:80
-
+            - name: COSY_INFLUX_URL
+              value: http://cosy-influxdb:8086
+            - name: COSY_INFLUX_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: cosy-influxdb-secrets
+                  key: DOCKER_INFLUXDB_INIT_ADMIN_TOKEN
           volumeMounts:
             - name: docker-socket
               mountPath: /var/run/docker.sock
@@ -62,13 +68,13 @@ spec:
             httpGet:
               path: /api/actuator/health
               port: 8080
-            initialDelaySeconds: 30
+            initialDelaySeconds: 90
             periodSeconds: 10
           readinessProbe:
             httpGet:
               path: /api/actuator/health
               port: 8080
-            initialDelaySeconds: 15
+            initialDelaySeconds: 90
             periodSeconds: 5
 
       volumes:

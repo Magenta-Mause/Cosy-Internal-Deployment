@@ -1,0 +1,19 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: cosy-infrastructure-influx
+spec:
+  destination:
+    namespace: cosy
+    server: https://kubernetes.default.svc
+  source:
+    path: kubernetes/infrastructure/influx
+    repoURL: https://github.com/Magenta-Mause/cosy-internal-deployment
+    targetRevision: HEAD
+  project: cosy
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+      enabled: true
+
