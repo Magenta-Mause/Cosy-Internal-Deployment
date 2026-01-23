@@ -81,4 +81,3 @@ spec:
         - name: docker-socket
           hostPath:
             path: /var/run/docker-non.sock
-            type: Socket
