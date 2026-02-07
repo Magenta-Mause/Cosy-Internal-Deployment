@@ -80,3 +80,46 @@ ssh -i ~/.ssh/cosy_deploy deploy@YOUR_VPS_IP
 ✅ **Nginx & SSL**: Installs and configures nginx as a reverse proxy, obtains a Let's Encrypt SSL certificate, and sets up automatic renewal.
 ✅ **Application Setup**: Creates the `/opt/cosy` directory, copies the `docker-compose.yml` file, and generates database secrets. Starts the Docker containers.
 
+## Updating Secrets on Existing Installation
+
+If you need to add new secrets (e.g., InfluxDB credentials) to an already configured VPS:
+
+### Running the Playbook on Existing VPS
+
+The Ansible playbook is **idempotent**, meaning you can safely run it multiple times. It will:
+- **Skip** tasks that are already complete (e.g., Docker installation, user creation)
+- **Generate** only missing secrets without overwriting existing ones
+- **Update** configuration files and restart services as needed
+
+```bash
+cd docker/ansible
+ansible-playbook -i inventory-setup.yml setup-vps.yml
+```
+
+### What Happens with Secrets
+
+The playbook checks if secret files exist in `/opt/cosy/secrets/` before generating new ones:
+- **Existing secrets** (e.g., `loki_password`, `influx_password`) are **preserved** and reused
+- **Missing secrets** are automatically generated
+- All secrets are written to `/opt/cosy/.env` which is used by Docker Compose
+
+### Behavior for Each Secret Type
+
+| Secret | File Location | Generated If Missing | Overwritten on Re-run |
+|--------|---------------|---------------------|----------------------|
+| Loki Password | `/opt/cosy/secrets/loki_password` | ✅ Yes | ❌ No |
+| InfluxDB Username | `/opt/cosy/secrets/influx_username` | ✅ Yes | ❌ No |
+| InfluxDB Password | `/opt/cosy/secrets/influx_password` | ✅ Yes | ❌ No |
+| InfluxDB Admin Token | `/opt/cosy/secrets/influx_admin_token` | ✅ Yes | ❌ No |
+
+### Manual Secret Inspection
+
+To view the generated secrets on the VPS:
+
+```bash
+ssh -i ~/.ssh/cosy_deploy deploy@YOUR_VPS_IP
+sudo cat /opt/cosy/.env
+```
+
+**Note**: Keep these secrets secure. They should also be stored in your password manager or GitHub Secrets for backup.
+
