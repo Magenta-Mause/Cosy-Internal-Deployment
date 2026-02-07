@@ -2,6 +2,6 @@ all:
   hosts:
     vps:
       ansible_host: 80.158.76.127
-      ansible_user: ubuntu
-      ansible_ssh_private_key_file: ~/.ssh/ecs-key.pem
+      ansible_user: deploy
+      ansible_ssh_private_key_file: ~/.ssh/cosy_docker
 

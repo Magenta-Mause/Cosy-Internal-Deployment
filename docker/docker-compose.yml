@@ -16,10 +16,15 @@ services:
       - COSY_LOKI_URL=http://loki-nginx-proxy:80
       - COSY_LOKI_USER=${LOKI_USER}
       - COSY_LOKI_PASSWORD=${LOKI_PASSWORD}
+      - COSY_INFLUX_URL=http://influx:8086
+      - COSY_INFLUX_TOKEN=${COSY_INFLUXDB_ADMIN_TOKEN}
+      - COSY_INFLUX_ORG=${COSY_INFLUXDB_ORG:-cosy-org}
+      - COSY_INFLUX_BUCKET=${COSY_INFLUXDB_BUCKET:-cosy-bucket}
     depends_on:
       - database
       - loki
       - loki-nginx-proxy
+      - influx
     networks:
       - cosy-network
 
@@ -64,10 +69,30 @@ services:
     depends_on:
       - loki
 
+  influx:
+    image: influxdb:2.7-alpine
+    container_name: cosy-influx
+    ports:
+    - "8086:8086"
+    volumes:
+      - influx_data:/var/lib/influxdb2
+      - influx_config:/etc/influxdb2
+    environment:
+      DOCKER_INFLUXDB_INIT_MODE: setup
+      DOCKER_INFLUXDB_INIT_USERNAME: ${COSY_INFLUXDB_USERNAME}
+      DOCKER_INFLUXDB_INIT_PASSWORD: ${COSY_INFLUXDB_PASSWORD}
+      DOCKER_INFLUXDB_INIT_ORG: ${COSY_INFLUXDB_ORG:-cosy-org}
+      DOCKER_INFLUXDB_INIT_BUCKET: ${COSY_INFLUXDB_BUCKET:-cosy-bucket}
+      DOCKER_INFLUXDB_INIT_ADMIN_TOKEN: ${COSY_INFLUXDB_ADMIN_TOKEN}
+    networks:
+      - cosy-network
 
 volumes:
+  influx_data:
+  influx_config:
   postgres-data:
   loki-data:
 
 networks:
   cosy-network:
+
