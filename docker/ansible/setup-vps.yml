@@ -396,6 +396,7 @@
       slurp:
         src: /opt/cosy/secrets/influx_username
       register: influx_user_slurp
+      no_log: true
 
     - name: Set influx_username fact
       set_fact:
