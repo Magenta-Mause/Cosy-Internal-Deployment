@@ -72,8 +72,6 @@ services:
   influx:
     image: influxdb:2.7-alpine
     container_name: cosy-influx
-    ports:
-    - "8086:8086"
     volumes:
       - influx_data:/var/lib/influxdb2
       - influx_config:/etc/influxdb2
