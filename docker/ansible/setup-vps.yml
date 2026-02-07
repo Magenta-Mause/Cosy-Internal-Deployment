@@ -334,6 +334,7 @@
       stat:
         path: /opt/cosy/secrets/loki_password
       register: loki_pw_file
+      no_log: true
 
     - name: Generate Loki password if missing
       shell: "openssl rand -base64 32 > /opt/cosy/secrets/loki_password"
@@ -351,6 +352,7 @@
       slurp:
         src: /opt/cosy/secrets/loki_password
       register: loki_pw_slurp
+      no_log: true
 
     - name: Set loki_password fact
       set_fact:
@@ -379,6 +381,7 @@
       stat:
         path: /opt/cosy/secrets/influx_username
       register: influx_user_file
+      no_log: true
 
     - name: Generate InfluxDB username if missing
       shell: "echo 'influx_admin' > /opt/cosy/secrets/influx_username"
@@ -407,6 +410,7 @@
       stat:
         path: /opt/cosy/secrets/influx_password
       register: influx_pw_file
+      no_log: true
 
     - name: Generate InfluxDB password if missing
       shell: "openssl rand -base64 32 > /opt/cosy/secrets/influx_password"
@@ -424,6 +428,7 @@
       slurp:
         src: /opt/cosy/secrets/influx_password
       register: influx_pw_slurp
+      no_log: true
 
     - name: Set influx_password fact
       set_fact:
@@ -434,6 +439,7 @@
       stat:
         path: /opt/cosy/secrets/influx_admin_token
       register: influx_token_file
+      no_log: true
 
     - name: Generate InfluxDB admin token if missing
       shell: "openssl rand -base64 32 > /opt/cosy/secrets/influx_admin_token"
@@ -451,6 +457,7 @@
       slurp:
         src: /opt/cosy/secrets/influx_admin_token
       register: influx_token_slurp
+      no_log: true
 
     - name: Set influx_admin_token fact
       set_fact:
