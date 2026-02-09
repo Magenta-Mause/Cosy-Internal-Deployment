@@ -80,4 +80,5 @@ spec:
       volumes:
         - name: docker-socket
           hostPath:
-            path: /var/run/docker-non.sock
+            path: /var/run/docker.sock
+            type: Socket
