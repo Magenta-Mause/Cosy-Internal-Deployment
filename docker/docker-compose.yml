@@ -24,7 +24,7 @@ services:
       - cosy-network
 
   frontend:
-    image: ghcr.io/magenta-mause/cosy-frontend:sha-503fb1c
+    image: ghcr.io/magenta-mause/cosy-frontend:sha-8960bc2
     ports:
       - "127.0.0.1:3000:80"
     depends_on:
