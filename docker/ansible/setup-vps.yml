@@ -20,6 +20,8 @@
     postgres_user: cosy_user
     postgres_password: "{{ lookup('password', '/dev/null length=32 chars=ascii_letters,digits') }}"
     loki_user: loki_user
+    influx_org: cosy-org
+    influx_bucket: cosy-bucket
     
   pre_tasks:
     - name: Check for COSY_DOMAIN environment variable
@@ -332,6 +334,7 @@
       stat:
         path: /opt/cosy/secrets/loki_password
       register: loki_pw_file
+      no_log: true
 
     - name: Generate Loki password if missing
       shell: "openssl rand -base64 32 > /opt/cosy/secrets/loki_password"
@@ -349,6 +352,7 @@
       slurp:
         src: /opt/cosy/secrets/loki_password
       register: loki_pw_slurp
+      no_log: true
 
     - name: Set loki_password fact
       set_fact:
@@ -370,6 +374,94 @@
         owner: "101" # user ID of loki-nginx-proxy container
         group: "101"
         mode: "0640"
+      no_log: true
+
+    # InfluxDB Secrets
+    - name: Check if InfluxDB username exists
+      stat:
+        path: /opt/cosy/secrets/influx_username
+      register: influx_user_file
+      no_log: true
+
+    - name: Generate InfluxDB username if missing
+      shell: "echo 'influx_admin' > /opt/cosy/secrets/influx_username"
+      when: not influx_user_file.stat.exists
+      no_log: true
+
+    - name: Set permissions on InfluxDB username file
+      file:
+        path: /opt/cosy/secrets/influx_username
+        owner: "{{ deploy_user }}"
+        group: "{{ deploy_user }}"
+        mode: '0600'
+
+    - name: Read InfluxDB username
+      slurp:
+        src: /opt/cosy/secrets/influx_username
+      register: influx_user_slurp
+      no_log: true
+
+    - name: Set influx_username fact
+      set_fact:
+        influx_username: "{{ influx_user_slurp['content'] | b64decode | trim }}"
+      no_log: true
+
+    - name: Check if InfluxDB password exists
+      stat:
+        path: /opt/cosy/secrets/influx_password
+      register: influx_pw_file
+      no_log: true
+
+    - name: Generate InfluxDB password if missing
+      shell: "openssl rand -base64 32 > /opt/cosy/secrets/influx_password"
+      when: not influx_pw_file.stat.exists
+      no_log: true
+
+    - name: Set permissions on InfluxDB password file
+      file:
+        path: /opt/cosy/secrets/influx_password
+        owner: "{{ deploy_user }}"
+        group: "{{ deploy_user }}"
+        mode: '0600'
+
+    - name: Read InfluxDB password
+      slurp:
+        src: /opt/cosy/secrets/influx_password
+      register: influx_pw_slurp
+      no_log: true
+
+    - name: Set influx_password fact
+      set_fact:
+        influx_password: "{{ influx_pw_slurp['content'] | b64decode | trim }}"
+      no_log: true
+
+    - name: Check if InfluxDB admin token exists
+      stat:
+        path: /opt/cosy/secrets/influx_admin_token
+      register: influx_token_file
+      no_log: true
+
+    - name: Generate InfluxDB admin token if missing
+      shell: "openssl rand -base64 32 > /opt/cosy/secrets/influx_admin_token"
+      when: not influx_token_file.stat.exists
+      no_log: true
+
+    - name: Set permissions on InfluxDB admin token file
+      file:
+        path: /opt/cosy/secrets/influx_admin_token
+        owner: "{{ deploy_user }}"
+        group: "{{ deploy_user }}"
+        mode: '0600'
+
+    - name: Read InfluxDB admin token
+      slurp:
+        src: /opt/cosy/secrets/influx_admin_token
+      register: influx_token_slurp
+      no_log: true
+
+    - name: Set influx_admin_token fact
+      set_fact:
+        influx_admin_token: "{{ influx_token_slurp['content'] | b64decode | trim }}"
       no_log: true
 
     - name: Copy config files to host
