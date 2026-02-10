@@ -48,7 +48,9 @@ spec:
             - name: COSY_INFLUX_URL
               value: http://cosy-influxdb:8086
             - name: RCON_HOST
-              value: host-backend
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.hostIP
             - name: COSY_INFLUX_TOKEN
               valueFrom:
                 secretKeyRef:
