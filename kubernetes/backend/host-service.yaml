@@ -1,0 +1,9 @@
+# https://chatgpt.com/share/698a777c-c1d8-800e-9d99-9ccc90b2bf0c
+apiVersion: v1
+kind: Service
+metadata:
+  name: host-backend
+spec:
+  type: ExternalName
+  externalName: 10.42.0.1
+
