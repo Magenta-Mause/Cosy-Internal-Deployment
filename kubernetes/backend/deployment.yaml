@@ -47,6 +47,8 @@ spec:
               value: http://cosy-loki-nginx:80
             - name: COSY_INFLUX_URL
               value: http://cosy-influxdb:8086
+            - name: COSY_DOCKER_VOLUME_DIRECTORY
+              value: /etc/cosy/volume-mounts
             - name: RCON_HOST
               valueFrom:
                 fieldRef:
