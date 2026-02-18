@@ -22,6 +22,7 @@
     loki_user: loki_user
     influx_org: cosy-org
     influx_bucket: cosy-bucket
+    cosy_volume_mounts_path: /opt/cosy/volume-mounts
     
   pre_tasks:
     - name: Check for COSY_DOMAIN environment variable
@@ -223,6 +224,14 @@
     - name: Create deployment directory
       file:
         path: /opt/cosy
+        state: directory
+        owner: "{{ deploy_user }}"
+        group: "{{ deploy_user }}"
+        mode: '0755'
+
+    - name: Create backend volume mounts directory
+      file:
+        path: "{{ cosy_volume_mounts_path }}"
         state: directory
         owner: "{{ deploy_user }}"
         group: "{{ deploy_user }}"
