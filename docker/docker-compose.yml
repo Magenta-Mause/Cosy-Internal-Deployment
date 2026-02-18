@@ -1,6 +1,6 @@
 services:
   backend:
-    image: ghcr.io/magenta-mause/cosy-backend:sha-72d17ab
+    image: ghcr.io/magenta-mause/cosy-backend:sha-a5c87d8
     container_name: cosy-backend
     ports:
       - "127.0.0.1:8080:8080"
@@ -30,7 +30,7 @@ services:
       - cosy-network
 
   frontend:
-    image: ghcr.io/magenta-mause/cosy-frontend:sha-35e4d7c
+    image: ghcr.io/magenta-mause/cosy-frontend:sha-281aad6
     ports:
       - "127.0.0.1:3000:80"
     depends_on:
@@ -94,3 +94,4 @@ volumes:
 
 networks:
   cosy-network:
+
