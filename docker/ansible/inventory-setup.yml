@@ -1,7 +1,7 @@
 all:
   hosts:
     vps:
-      ansible_host: your_server_ip
-      ansible_user: your_ssh_user
-      ansible_ssh_private_key_file: /your/path/to/ssh_private_key_file
+      ansible_host: 80.158.76.127
+      ansible_user: deploy
+      ansible_ssh_private_key_file: /home/sim/.ssh/cosy_docker
 
