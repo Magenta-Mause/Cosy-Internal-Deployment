@@ -10,5 +10,4 @@ spec:
       targetPort: 8080
       nodePort: 30080 # to make the backend reachable from the host (needed for custom metrics support)
       protocol: TCP
-  type: ClusterIP
-
+  type: NodePort
