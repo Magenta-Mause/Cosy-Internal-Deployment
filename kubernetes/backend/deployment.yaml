@@ -58,10 +58,14 @@ spec:
                 secretKeyRef:
                   name: cosy-influxdb-secrets
                   key: DOCKER_INFLUXDB_INIT_ADMIN_TOKEN
+            - name: COSY_DOCKER_BACKEND_VOLUME_MOUNT_PATH
+              value: /etc/cosy/volume-mounts
           volumeMounts:
             - name: docker-socket
               mountPath: /var/run/docker.sock
-
+            - name: server-volume-mounts
+              mountPath: /etc/server-volume-mounts
+          
           resources:
             limits:
               memory: "1Gi"
@@ -88,3 +92,6 @@ spec:
           hostPath:
             path: /var/run/docker.sock
             type: Socket
+        - name: server-volume-mounts
+          hostPath: 
+            path: /etc/cosy/volume-mounts
