@@ -59,7 +59,7 @@ spec:
                   name: cosy-influxdb-secrets
                   key: DOCKER_INFLUXDB_INIT_ADMIN_TOKEN
             - name: COSY_DOCKER_BACKEND_VOLUME_MOUNT_PATH
-              value: /etc/cosy/volume-mounts
+              value: /etc/server-volume-mounts
           volumeMounts:
             - name: docker-socket
               mountPath: /var/run/docker.sock
