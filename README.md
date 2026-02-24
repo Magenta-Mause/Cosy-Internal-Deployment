@@ -17,10 +17,23 @@ This secret can be generated using this commmand:
 docker run --rm httpd:2.4-alpine htpasswd -nbB loki-user loki-password
 ```
 
-### cosy-loki-credentials
+### `cosy-loki-credentials`
 Auth credentials defined in the htpasswd Config
 #### password: `password used by loki auth proxy`
 #### user: `user used by loki auth proxy`
+
+### `cosy-admin-credentials`
+Default admin user credentials seeded into the database on first startup.
+#### admin-username: `default admin username (e.g. admin)`
+#### admin-password: `initial admin password`
+
+Example command to create the secret:
+```
+kubectl create secret generic cosy-admin-credentials \
+  --namespace cosy \
+  --from-literal=admin-username=admin \
+  --from-literal=admin-password=<your-password>
+```
 
 ## CI/CD Deployment Flow
 
