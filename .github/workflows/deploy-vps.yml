@@ -41,18 +41,12 @@ jobs:
             cd /opt/cosy
 
             echo "Updating admin password in .env..."
-            if grep -q "^COSY_DEFAULTS_ADMIN_PASSWORD=" .env; then
-              sed -i "s|^COSY_DEFAULTS_ADMIN_PASSWORD=.*|COSY_DEFAULTS_ADMIN_PASSWORD=${COSY_ADMIN_PASSWORD}|" .env
-            else
-              echo "COSY_DEFAULTS_ADMIN_PASSWORD=${COSY_ADMIN_PASSWORD}" >> .env
-            fi
+            sed -i '/^COSY_DEFAULTS_ADMIN_PASSWORD=/d' .env
+            printf 'COSY_DEFAULTS_ADMIN_PASSWORD=%s\n' "${COSY_ADMIN_PASSWORD}" >> .env
 
             echo "Updating RCON host in .env..."
-            if grep -q "^COSY_RCON_HOST=" .env; then
-              sed -i "s|^COSY_RCON_HOST=.*|COSY_RCON_HOST=${COSY_RCON_HOST}|" .env
-            else
-              echo "COSY_RCON_HOST=${COSY_RCON_HOST}" >> .env
-            fi
+            sed -i '/^COSY_RCON_HOST=/d' .env
+            printf 'COSY_RCON_HOST=%s\n' "${COSY_RCON_HOST}" >> .env
 
             echo "Pulling latest images..."
             docker compose pull
