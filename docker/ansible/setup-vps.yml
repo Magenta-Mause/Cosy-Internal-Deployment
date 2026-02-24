@@ -233,8 +233,8 @@
       file:
         path: "{{ cosy_volume_mounts_path }}"
         state: directory
-        owner: "{{ deploy_user }}"
-        group: "{{ deploy_user }}"
+        owner: "1000"
+        group: "1000"
         mode: '0755'
     
     # SSL Certificate

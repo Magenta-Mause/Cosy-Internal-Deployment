@@ -48,6 +48,10 @@ jobs:
             sed -i '/^COSY_RCON_HOST=/d' .env
             printf 'COSY_RCON_HOST=%s\n' "${COSY_RCON_HOST}" >> .env
 
+            echo "Ensuring volume mounts directory has correct permissions..."
+            mkdir -p "${COSY_VOLUME_MOUNTS_PATH:-/opt/cosy/volume-mounts}"
+            chmod 777 "${COSY_VOLUME_MOUNTS_PATH:-/opt/cosy/volume-mounts}"
+
             echo "Pulling latest images..."
             docker compose pull
 
