@@ -6,7 +6,7 @@ services:
       - "127.0.0.1:8080:8080"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-      - ${COSY_VOLUME_MOUNTS_PATH:-/opt/cosy/volume-mounts}:/workspace/dummy/cosy/volume-mounts
+      - ${COSY_VOLUME_MOUNTS_PATH:-/opt/cosy/volume-mounts}:${COSY_VOLUME_MOUNTS_PATH:-/opt/cosy/volume-mounts}
     group_add:
       - "988"
     environment:
@@ -25,7 +25,7 @@ services:
       - COSY_DEFAULTS_ADMIN_PASSWORD=${COSY_DEFAULTS_ADMIN_PASSWORD}
       - RCON_HOST=${COSY_RCON_HOST}
       - COSY_DOCKER_VOLUME_DIRECTORY=${COSY_VOLUME_MOUNTS_PATH:-/opt/cosy/volume-mounts}
-      - COSY_DOCKER_BACKEND_VOLUME_MOUNT_PATH=/workspace/dummy/cosy/volume-mounts
+      - COSY_DOCKER_BACKEND_VOLUME_MOUNT_PATH=${COSY_VOLUME_MOUNTS_PATH:-/opt/cosy/volume-mounts}
       - COSY_CUSTOM_METRICS_BASE_URL=http://${COSY_RCON_HOST}:30080
     restart: unless-stopped
     depends_on:
