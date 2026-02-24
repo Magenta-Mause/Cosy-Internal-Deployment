@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: cosy-frontend
-          image: ghcr.io/magenta-mause/cosy-frontend:sha-3bb9718
+          image: ghcr.io/magenta-mause/cosy-frontend:sha-5c8244f
           ports:
             - containerPort: 80
           resources:
