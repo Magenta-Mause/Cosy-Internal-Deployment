@@ -8,7 +8,7 @@ spec:
     server: https://kubernetes.default.svc
   source:
     path: argo
-    repoURL: https://github.com/Magenta-Mause/cosy-gameapi
+    repoURL: https://github.com/Magenta-Mause/cosy-gameapi-service
     targetRevision: HEAD
   project: cosy
   syncPolicy:
