@@ -23,10 +23,10 @@ services:
       - COSY_INFLUX_BUCKET=${COSY_INFLUXDB_BUCKET:-cosy-bucket}
       - COSY_DEFAULTS_ADMIN_USERNAME=${COSY_DEFAULTS_ADMIN_USERNAME:-admin}
       - COSY_DEFAULTS_ADMIN_PASSWORD=${COSY_DEFAULTS_ADMIN_PASSWORD}
-      - RCON_HOST=${COSY_RCON_HOST}
+      - RCON_HOST=host.docker.internal
       - COSY_DOCKER_VOLUME_DIRECTORY=${COSY_VOLUME_MOUNTS_PATH:-/opt/cosy/volume-mounts}
       - COSY_DOCKER_BACKEND_VOLUME_MOUNT_PATH=${COSY_VOLUME_MOUNTS_PATH:-/opt/cosy/volume-mounts}
-      - COSY_CUSTOM_METRICS_BASE_URL=http://${COSY_RCON_HOST}:30080
+      - COSY_CUSTOM_METRICS_BASE_URL=http://host.docker.internal:30080
     restart: unless-stopped
     depends_on:
       database:
