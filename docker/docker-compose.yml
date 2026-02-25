@@ -26,7 +26,7 @@ services:
       - RCON_HOST=host.docker.internal
       - COSY_DOCKER_VOLUME_DIRECTORY=${COSY_VOLUME_MOUNTS_PATH:-/opt/cosy/volume-mounts}
       - COSY_DOCKER_BACKEND_VOLUME_MOUNT_PATH=${COSY_VOLUME_MOUNTS_PATH:-/opt/cosy/volume-mounts}
-      - COSY_CUSTOM_METRICS_BASE_URL=http://host.docker.internal:30080
+      - COSY_CUSTOM_METRICS_BASE_URL=http://host.docker.internal:8080
     restart: unless-stopped
     depends_on:
       database:
