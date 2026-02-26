@@ -32,7 +32,7 @@ Example command to create the secret:
 kubectl create secret generic cosy-owner-credentials \
   --namespace cosy \
   --from-literal=owner-username=admin \
-  --from-literal=owner-password=<your-password>
+  --from-literal=owner-password=<your-secure-password>
 ```
 
 ## CI/CD Deployment Flow
