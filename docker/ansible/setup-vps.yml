@@ -473,34 +473,34 @@
         influx_admin_token: "{{ influx_token_slurp['content'] | b64decode | trim }}"
       no_log: true
 
-    # Admin Credentials
-    - name: Check if admin password exists
+    # Owner Credentials
+    - name: Check if owner password exists
       stat:
-        path: /opt/cosy/secrets/admin_password
-      register: admin_pw_file
+        path: /opt/cosy/secrets/owner_password
+      register: owner_pw_file
       no_log: true
 
-    - name: Generate admin password if missing
-      shell: "openssl rand -base64 24 > /opt/cosy/secrets/admin_password"
-      when: not admin_pw_file.stat.exists
+    - name: Generate owner password if missing
+      shell: "openssl rand -base64 24 > /opt/cosy/secrets/owner_password"
+      when: not owner_pw_file.stat.exists
       no_log: true
 
-    - name: Set permissions on admin password file
+    - name: Set permissions on owner password file
       file:
-        path: /opt/cosy/secrets/admin_password
+        path: /opt/cosy/secrets/owner_password
         owner: "{{ deploy_user }}"
         group: "{{ deploy_user }}"
         mode: '0600'
 
-    - name: Read admin password
+    - name: Read owner password
       slurp:
-        src: /opt/cosy/secrets/admin_password
-      register: admin_pw_slurp
+        src: /opt/cosy/secrets/owner_password
+      register: owner_pw_slurp
       no_log: true
 
-    - name: Set admin_password fact
+    - name: Set owner_password fact
       set_fact:
-        admin_password: "{{ admin_pw_slurp['content'] | b64decode | trim }}"
+        owner_password: "{{ owner_pw_slurp['content'] | b64decode | trim }}"
       no_log: true
 
     - name: Copy config files to host
@@ -546,8 +546,8 @@
           - "Name: VPS_SSH_KEY"
           - "Value: (The content of the PRIVATE key you generated, e.g., '~/.ssh/cosy_deploy')"
           - ""
-          - "Name: COSY_ADMIN_PASSWORD"
-          - "Value: (The generated admin password — see /opt/cosy/secrets/admin_password on the VPS)"
+          - "Name: COSY_OWNER_PASSWORD"
+          - "Value: (The generated owner password — see /opt/cosy/secrets/owner_password on the VPS)"
           - ""
           - "========================================================================"
     

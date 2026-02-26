@@ -22,17 +22,17 @@ Auth credentials defined in the htpasswd Config
 #### password: `password used by loki auth proxy`
 #### user: `user used by loki auth proxy`
 
-### `cosy-admin-credentials`
-Default admin user credentials seeded into the database on first startup.
-#### admin-username: `default admin username (e.g. admin)`
-#### admin-password: `initial admin password`
+### `cosy-owner-credentials`
+Default owner (superadmin) user credentials seeded into the database on first startup.
+#### owner-username: `default owner username (e.g. admin)`
+#### owner-password: `initial owner password`
 
 Example command to create the secret:
 ```
-kubectl create secret generic cosy-admin-credentials \
+kubectl create secret generic cosy-owner-credentials \
   --namespace cosy \
-  --from-literal=admin-username=admin \
-  --from-literal=admin-password=<your-password>
+  --from-literal=owner-username=admin \
+  --from-literal=owner-password=<your-password>
 ```
 
 ## CI/CD Deployment Flow
