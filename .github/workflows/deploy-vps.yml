@@ -35,20 +35,24 @@ jobs:
           script: |
             set -e
             cd /opt/cosy
-            
+
+            echo "Ensuring volume mounts directory has correct permissions..."
+            mkdir -p "${COSY_VOLUME_MOUNTS_PATH:-/opt/cosy/volume-mounts}"
+            chmod 777 "${COSY_VOLUME_MOUNTS_PATH:-/opt/cosy/volume-mounts}"
+
             echo "Pulling latest images..."
             docker compose pull
-            
+
             echo "Stopping and removing old containers and volumes..."
             # Use 'down -v' to remove old containers and their volumes (deletes DB data)
             docker compose down -v
-            
+
             echo "Starting new containers..."
             docker compose up -d
-            
+
             echo "Cleaning up unused images..."
             docker image prune -f
-            
+
             echo "=== Deployment complete. Running containers: ==="
             docker compose ps
 

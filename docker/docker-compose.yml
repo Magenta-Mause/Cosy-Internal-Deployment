@@ -6,7 +6,7 @@ services:
       - "127.0.0.1:8080:8080"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-      - ${COSY_VOLUME_MOUNTS_PATH:-/opt/cosy/volume-mounts}:/workspace/dummy/cosy/volume-mounts
+      - ${COSY_VOLUME_MOUNTS_PATH:-/opt/cosy/volume-mounts}:/etc/server-volume-mounts
     group_add:
       - "988"
     environment:
@@ -21,6 +21,13 @@ services:
       - COSY_INFLUX_TOKEN=${COSY_INFLUXDB_ADMIN_TOKEN}
       - COSY_INFLUX_ORG=${COSY_INFLUXDB_ORG:-cosy-org}
       - COSY_INFLUX_BUCKET=${COSY_INFLUXDB_BUCKET:-cosy-bucket}
+      - COSY_DEFAULTS_OWNER_USERNAME=${COSY_DEFAULTS_OWNER_USERNAME:-admin}
+      - COSY_DEFAULTS_OWNER_PASSWORD=${COSY_DEFAULTS_OWNER_PASSWORD:-admin}
+      - RCON_HOST=host.docker.internal
+      - COSY_DOCKER_VOLUME_DIRECTORY=${COSY_VOLUME_MOUNTS_PATH:-/opt/cosy/volume-mounts}
+      - COSY_DOCKER_BACKEND_VOLUME_MOUNT_PATH=/etc/server-volume-mounts
+      - COSY_CUSTOM_METRICS_BASE_URL=http://host.docker.internal:8080
+    restart: unless-stopped
     depends_on:
       database:
         condition: service_healthy
@@ -37,6 +44,7 @@ services:
     image: ghcr.io/magenta-mause/cosy-frontend:sha-fd0057c
     ports:
       - "127.0.0.1:3000:80"
+    restart: unless-stopped
     depends_on:
       - backend
     networks:
@@ -55,6 +63,7 @@ services:
       retries: 12
     volumes:
       - postgres-data:/var/lib/postgresql/data
+    restart: unless-stopped
     networks:
       - cosy-network
 
@@ -65,6 +74,7 @@ services:
     volumes:
       - loki-data:/loki
       - ./loki-config.yaml:/etc/loki/loki-config.yaml:ro
+    restart: unless-stopped
     networks:
       - cosy-network
 
@@ -74,6 +84,7 @@ services:
     volumes:
       - ./loki-nginx.conf:/etc/nginx/nginx.conf:ro
       - ./htpasswd:/etc/nginx/htpasswd:ro
+    restart: unless-stopped
     networks:
       - cosy-network
     depends_on:
@@ -92,6 +103,7 @@ services:
       DOCKER_INFLUXDB_INIT_ORG: ${COSY_INFLUXDB_ORG:-cosy-org}
       DOCKER_INFLUXDB_INIT_BUCKET: ${COSY_INFLUXDB_BUCKET:-cosy-bucket}
       DOCKER_INFLUXDB_INIT_ADMIN_TOKEN: ${COSY_INFLUXDB_ADMIN_TOKEN}
+    restart: unless-stopped
     networks:
       - cosy-network
 

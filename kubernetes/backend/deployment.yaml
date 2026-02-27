@@ -62,6 +62,16 @@ spec:
               value: /etc/server-volume-mounts
             - name: COSY_CUSTOM_METRICS_BASE_URL
               value: http://host.docker.internal:30080
+            - name: COSY_DEFAULTS_OWNER_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: cosy-owner-credentials
+                  key: owner-username
+            - name: COSY_DEFAULTS_OWNER_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: cosy-owner-credentials
+                  key: owner-password
           volumeMounts:
             - name: docker-socket
               mountPath: /var/run/docker.sock
