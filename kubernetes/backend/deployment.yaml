@@ -38,6 +38,11 @@ spec:
                 secretKeyRef:
                   name: cosy-loki-credentials
                   key: user
+            - name: COSY_JWT_SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: cosy-jwt-secrets
+                  key: secret
             - name: COSY_LOKI_PASSWORD
               valueFrom:
                 secretKeyRef:
