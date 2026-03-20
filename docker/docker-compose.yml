@@ -41,7 +41,7 @@ services:
       - cosy-network
 
   frontend:
-    image: ghcr.io/magenta-mause/cosy-frontend:sha-aa1df7d
+    image: ghcr.io/magenta-mause/cosy-frontend:sha-1e01ce2
     ports:
       - "127.0.0.1:3000:80"
     restart: unless-stopped
