@@ -22,7 +22,7 @@ spec:
             - containerPort: 8080
           env:
             - name: COSY_CORS_ALLOWED-ORIGINS
-              value: https://cosy.jannekeipert.de, https://app.base44.com
+              value: https://cosy.jannekeipert.de,https://app.base44.com
             - name: SPRING_DATASOURCE_USERNAME
               valueFrom:
                 secretKeyRef:
