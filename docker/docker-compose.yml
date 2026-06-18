@@ -1,6 +1,6 @@
 services:
   backend:
-    image: ghcr.io/magenta-mause/cosy-backend:sha-75a89bb
+    image: ghcr.io/magenta-mause/cosy-backend:sha-047aa0e
     container_name: cosy-backend
     ports:
       - "127.0.0.1:8080:8080"
