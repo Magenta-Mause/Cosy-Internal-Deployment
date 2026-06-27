@@ -1,3 +1,7 @@
+# LEGACY: kept intentionally for older cosy-backend versions that still resolve game
+# artwork via the live SteamGridDB proxy (cosy-gameapi-service). New backend versions
+# source games from the template-service /v3/games endpoint and do NOT depend on this.
+# Do NOT remove while any deployed backend predates the v3 games migration.
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
