@@ -6,14 +6,16 @@ apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
   name: cosy-gameapi
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
 spec:
   destination:
     namespace: cosy
     server: https://kubernetes.default.svc
   source:
     path: argo
-    repoURL: https://github.com/Magenta-Mause/cosy-gameapi-service
-    targetRevision: HEAD
+    repoURL: https://github.com/Magenta-Mause/Cosy-Game-Service
+    targetRevision: main
   project: cosy
   syncPolicy:
     automated:
