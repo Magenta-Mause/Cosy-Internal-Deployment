@@ -7,6 +7,8 @@ on:
 jobs:
   update-manifests:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     steps:
       - name: Generate GitHub App Token
         id: app-token
