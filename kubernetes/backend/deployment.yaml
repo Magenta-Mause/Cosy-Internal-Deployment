@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: cosy-backend
-          image: ghcr.io/magenta-mause/cosy-backend:sha-71d0a52
+          image: ghcr.io/magenta-mause/cosy-backend:sha-17112f3
           securityContext:
             runAsUser: 0
             runAsGroup: 0
